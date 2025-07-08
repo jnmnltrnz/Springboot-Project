@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mysql-docker:
+    image: mysql:8.0-oracle
+    container_name: mysql-docker
+    restart: always
+    environment:
+      MYSQL_DATABASE: newdb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: 123456
+      TZ: UTC
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - springboot-network
+
+  springboot-app:
+    build: .
+    container_name: springboot-app
+    restart: always
+    depends_on:
+      - mysql-docker
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-docker:3306/newdb?serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+    networks:
+      - springboot-network
+
+volumes:
+  mysql_data:
+
+networks:
+  springboot-network:
