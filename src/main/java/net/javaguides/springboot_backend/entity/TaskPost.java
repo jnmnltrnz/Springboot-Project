@@ -39,6 +39,7 @@ public class TaskPost {
     @JsonIgnore
     private Task task;
     
+    @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("createdAt ASC")
     private List<TaskComment> comments = new ArrayList<>();

@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -26,9 +25,6 @@ public class EmployeeService {
     
     @Autowired
     private ProfileRepository profileRepository;
-    
-    @Autowired
-    private AuditTrailRepository auditTrailRepository;
     
     @Autowired
     private AuditService auditService;
@@ -180,8 +176,6 @@ public class EmployeeService {
     }
 
     public List<Document> getDocumentsByEmployeeId(Long employeeId) {
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
         return documentRepository.findByEmployeeId(employeeId);
     }
 

@@ -1,6 +1,4 @@
 package net.javaguides.springboot_backend.controller;
-
-import net.javaguides.springboot_backend.entity.Employee;
 import net.javaguides.springboot_backend.entity.Project;
 import net.javaguides.springboot_backend.payload.ApiResponse;
 import net.javaguides.springboot_backend.service.ProjectService;

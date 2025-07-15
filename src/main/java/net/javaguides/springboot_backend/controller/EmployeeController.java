@@ -100,7 +100,6 @@ public class EmployeeController {
     @PostMapping("/employees/{id}/profile-image")
     public ResponseEntity<ApiResponse<Map<String, String>>> uploadProfile(@PathVariable Long id, @RequestParam("profileImage") MultipartFile file) {
         try {
-            ProfileEmployee profileEmployee = employeeService.uploadProfileImage(id, file);
             
             Map<String, String> response = new HashMap<>();
             response.put("message", "Profile image uploaded successfully");

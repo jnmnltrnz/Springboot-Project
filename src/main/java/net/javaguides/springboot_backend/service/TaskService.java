@@ -10,21 +10,18 @@ import net.javaguides.springboot_backend.exception.ResourceNotFoundException;
 import net.javaguides.springboot_backend.repositories.ProjectRepository;
 import net.javaguides.springboot_backend.repositories.TaskRepository;
 import net.javaguides.springboot_backend.repositories.TaskFileRepository;
-import net.javaguides.springboot_backend.service.AuditService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Optional;
+
 
 @Service
 @Transactional
