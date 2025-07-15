@@ -6,10 +6,12 @@ import io.cucumber.spring.CucumberContextConfiguration;
 import net.javaguides.springboot_backend.SpringbootBackendApplication;
 import net.javaguides.springboot_backend.controller.AccountController;
 import net.javaguides.springboot_backend.entity.Account;
+import net.javaguides.springboot_backend.payload.ApiResponse;
 import net.javaguides.springboot_backend.repositories.AccountRepository;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +26,7 @@ public class AccountSteps {
     private AccountRepository accountRepository;
 
     private Account loginRequest;
-    private Account loginResponse;
+    private ResponseEntity<ApiResponse<Account>> loginResponse;
     private Exception exception;
 
     @Before
@@ -67,8 +69,12 @@ public class AccountSteps {
     @Then("I should be logged in successfully")
     public void i_should_be_logged_in_successfully() {
         Assertions.assertNotNull(loginResponse, "Login response should not be null");
-        Assertions.assertTrue(loginResponse.isAuthenticated(), "User should be authenticated");
-        Assertions.assertNotNull(loginResponse.getSessionId(), "Session ID should not be null");
+        Assertions.assertTrue(loginResponse.getBody().isSuccess(), "API response should be successful");
+        
+        Account account = loginResponse.getBody().getData();
+        Assertions.assertNotNull(account, "Account data should not be null");
+        Assertions.assertTrue(account.isAuthenticated(), "User should be authenticated");
+        Assertions.assertNotNull(account.getSessionId(), "Session ID should not be null");
     }
 
     @Then("I should see an error message {string}")

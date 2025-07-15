@@ -14,6 +14,9 @@ import java.util.Optional;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
+    @Query("SELECT DISTINCT p FROM Project p LEFT JOIN FETCH p.assignedEmployees ORDER BY p.createdAt DESC")
+    List<Project> findAllWithAssignedEmployees();
+
     // Find projects by status
     List<Project> findByStatus(ProjectStatus status);
 
@@ -56,6 +59,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     // Custom query to find projects with specific employee assigned
     @Query("SELECT p FROM Project p JOIN p.assignedEmployees e WHERE e.id = :employeeId")
     List<Project> findProjectsByEmployeeId(@Param("employeeId") Long employeeId);
+
+    @Query("SELECT DISTINCT p FROM Project p JOIN p.assignedEmployees e LEFT JOIN FETCH p.assignedEmployees WHERE e.id = :employeeId")
+    List<Project> findProjectsByEmployeeIdWithAssignedEmployees(@Param("employeeId") Long employeeId);
 
     // Custom query to find projects with no employees assigned
     @Query("SELECT p FROM Project p WHERE p.assignedEmployees IS EMPTY")
@@ -107,4 +113,20 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     // Find projects ordered by team size (largest first)
     List<Project> findAllByOrderByTeamSizeDesc();
+    
+    // Custom query to search projects by keyword in name or description
+    @Query("SELECT p FROM Project p WHERE p.name LIKE %:keyword% OR p.description LIKE %:keyword%")
+    List<Project> searchProjectsByKeyword(@Param("keyword") String keyword);
+    
+    // Custom query to find completed projects
+    @Query("SELECT p FROM Project p WHERE p.progress = 100 AND p.status = 'COMPLETED'")
+    List<Project> findCompletedProjects();
+    
+    // Custom query to get average project progress
+    @Query("SELECT AVG(p.progress) FROM Project p")
+    Double getAverageProjectProgress();
+    
+    // Custom query to find projects by deadline range
+    @Query("SELECT p FROM Project p WHERE p.deadline BETWEEN :startDate AND :endDate")
+    List<Project> findProjectsByDeadlineRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

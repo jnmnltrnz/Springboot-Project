@@ -1,6 +1,7 @@
 package net.javaguides.springboot_backend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -49,6 +50,37 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
     private Set<Employee> assignedEmployees = new HashSet<>();
+
+    // Getter for assigned employees
+    public Set<Employee> getAssignedEmployees() {
+        return assignedEmployees;
+    }
+
+    public void setAssignedEmployees(Set<Employee> assignedEmployees) {
+        this.assignedEmployees = assignedEmployees;
+    }
+
+    // Method to get employee IDs for JSON serialization
+    public Set<Long> getAssignedEmployeeIds() {
+        Set<Long> employeeIds = new HashSet<>();
+        if (assignedEmployees != null) {
+            for (Employee employee : assignedEmployees) {
+                employeeIds.add(employee.getId());
+            }
+        }
+        return employeeIds;
+    }
+
+    // Method to get employee names for display
+    public Set<String> getAssignedEmployeeNames() {
+        Set<String> employeeNames = new HashSet<>();
+        if (assignedEmployees != null) {
+            for (Employee employee : assignedEmployees) {
+                employeeNames.add(employee.getFirstName() + " " + employee.getLastName());
+            }
+        }
+        return employeeNames;
+    }
 
     // Constructors
     public Project() {
@@ -137,23 +169,15 @@ public class Project {
         this.updatedAt = updatedAt;
     }
 
-    public Set<Employee> getAssignedEmployees() {
-        return assignedEmployees;
-    }
-
-    public void setAssignedEmployees(Set<Employee> assignedEmployees) {
-        this.assignedEmployees = assignedEmployees;
-    }
-
     // Helper methods
     public void addEmployee(Employee employee) {
         this.assignedEmployees.add(employee);
-        this.teamSize = this.assignedEmployees.size();
+        // Don't automatically update teamSize - it represents the maximum allowed team members
     }
 
     public void removeEmployee(Employee employee) {
         this.assignedEmployees.remove(employee);
-        this.teamSize = this.assignedEmployees.size();
+        // Don't automatically update teamSize - it represents the maximum allowed team members
     }
 
     @PreUpdate
