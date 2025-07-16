@@ -2,6 +2,7 @@ package net.javaguides.springboot_backend.controller;
 
 import net.javaguides.springboot_backend.entity.*;
 import net.javaguides.springboot_backend.payload.ApiResponse;
+import net.javaguides.springboot_backend.payload.DocumentResponse;
 import net.javaguides.springboot_backend.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,8 +75,8 @@ public class EmployeeController {
 
     // Retrieve all documents for a specific employee
     @GetMapping("/employees/{id}/documents")
-    public ResponseEntity<ApiResponse<List<Document>>> getDocumentsByEmployeeId(@PathVariable Long id) {
-        List<Document> documents = employeeService.getDocumentsByEmployeeId(id);
+    public ResponseEntity<ApiResponse<List<DocumentResponse>>> getDocumentsByEmployeeId(@PathVariable Long id) {
+        List<DocumentResponse> documents = employeeService.getDocumentResponsesByEmployeeId(id);
         return ResponseEntity.ok(ApiResponse.success("Documents retrieved successfully", documents));
     }
 
@@ -101,6 +102,7 @@ public class EmployeeController {
     public ResponseEntity<ApiResponse<Map<String, String>>> uploadProfile(@PathVariable Long id, @RequestParam("profileImage") MultipartFile file) {
         try {
             
+            employeeService.uploadProfileImage(id,file);
             Map<String, String> response = new HashMap<>();
             response.put("message", "Profile image uploaded successfully");
             response.put("imageUrl", "/api/employees/" + id + "/profile-image");

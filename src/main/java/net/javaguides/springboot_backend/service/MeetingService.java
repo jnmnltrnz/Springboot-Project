@@ -49,9 +49,29 @@ public class MeetingService {
     }
 
     public Meeting createMeeting(MeetingRequest meetingRequest, String username) {
+        // Validate required fields
+        if (meetingRequest.getTitle() == null || meetingRequest.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Meeting title is required");
+        }
+        if (meetingRequest.getDate() == null) {
+            throw new IllegalArgumentException("Meeting date is required");
+        }
+        if (meetingRequest.getTime() == null ) {
+            throw new IllegalArgumentException("Meeting time is required");
+        }
+        try {
+          meetingRequest.getDate();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid date format. Expected yyyy-MM-dd");
+        }
+        try {
+          meetingRequest.getTime();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid time format. Expected HH:mm");
+        }
         // Parse date and time from strings
-        LocalDate meetingDate = LocalDate.parse(meetingRequest.getDate());
-        LocalTime meetingTime = LocalTime.parse(meetingRequest.getTime());
+        LocalDate meetingDate = meetingRequest.getDate();
+        LocalTime meetingTime = meetingRequest.getTime();
 
         // Create meeting without invitees first
         Meeting meeting = Meeting.builder()
@@ -82,8 +102,8 @@ public class MeetingService {
         Meeting meeting = getMeetingById(id);
         
         meeting.setTitle(meetingRequest.getTitle());
-        meeting.setMeetingDate(LocalDate.parse(meetingRequest.getDate()));
-        meeting.setMeetingTime(LocalTime.parse(meetingRequest.getTime()));
+        meeting.setMeetingDate(meetingRequest.getDate());
+        meeting.setMeetingTime(meetingRequest.getTime());
         meeting.setNotes(meetingRequest.getNotes());
 
         // Update invitees if provided

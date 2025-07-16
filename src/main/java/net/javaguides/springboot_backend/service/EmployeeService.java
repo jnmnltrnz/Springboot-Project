@@ -2,6 +2,7 @@ package net.javaguides.springboot_backend.service;
 
 import net.javaguides.springboot_backend.entity.*;
 import net.javaguides.springboot_backend.exception.ResourceNotFoundException;
+import net.javaguides.springboot_backend.payload.DocumentResponse;
 import net.javaguides.springboot_backend.repositories.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,8 +176,17 @@ public class EmployeeService {
         return "File uploaded and saved to DB: " + file.getOriginalFilename();
     }
 
-    public List<Document> getDocumentsByEmployeeId(Long employeeId) {
-        return documentRepository.findByEmployeeId(employeeId);
+    public List<DocumentResponse> getDocumentResponsesByEmployeeId(Long employeeId) {
+        List<Document> documents = documentRepository.findByEmployeeId(employeeId);
+        return documents.stream().map(this::toDocumentResponse).toList();
+    }
+
+    private DocumentResponse toDocumentResponse(Document doc) {
+        return DocumentResponse.builder()
+                .id(doc.getId())
+                .fileName(doc.getFileName())
+                .fileType(doc.getFileType())
+                .build();
     }
 
     public Document getDocumentById(Long documentId) {

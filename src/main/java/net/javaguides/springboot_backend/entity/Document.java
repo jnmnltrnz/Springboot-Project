@@ -1,5 +1,7 @@
 package net.javaguides.springboot_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "documents")
 public class Document {
@@ -22,6 +25,7 @@ public class Document {
 	@Column(nullable = false)
 	private String fileType;
 
+	@JsonIgnore
 	@Lob
 	@Column(name = "data", columnDefinition = "LONGBLOB", nullable = false)
 	private byte[] data;
