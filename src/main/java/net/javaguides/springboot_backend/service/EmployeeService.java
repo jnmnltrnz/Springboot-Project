@@ -4,7 +4,6 @@ import net.javaguides.springboot_backend.entity.*;
 import net.javaguides.springboot_backend.exception.ResourceNotFoundException;
 import net.javaguides.springboot_backend.payload.DocumentResponse;
 import net.javaguides.springboot_backend.repositories.*;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.security.SecureRandom;
 
 @Service
 @Transactional
@@ -49,7 +49,7 @@ public class EmployeeService {
             throw new IllegalArgumentException("Employee with email " + employee.getEmail() + " already exists");
         }
 
-        String rawPassword = RandomStringUtils.randomAlphanumeric(10);
+        String rawPassword = generateRandomAlphanumeric(10);
 
         // Create account with unique username
         Account account = new Account();
@@ -246,5 +246,16 @@ public class EmployeeService {
     public Employee getEmployeeById(Long id) {
         return employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
+    }
+
+    private static final String ALPHANUM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    public static String generateRandomAlphanumeric(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(ALPHANUM.charAt(RANDOM.nextInt(ALPHANUM.length())));
+        }
+        return sb.toString();
     }
 } 
