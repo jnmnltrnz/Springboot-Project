@@ -22,19 +22,21 @@
 
     WORKDIR /app
     
-    # Copy pom.xml and download dependencies first (to cache layers)
     COPY pom.xml .
     COPY src ./src
     
-    # Build the application
-    RUN ./mvnw clean package -DskipTests || mvn clean package -DskipTests
+    RUN apt-get update && apt-get install -y maven && \
+        mvn clean package -DskipTests
     
     # -------- Stage 2: Runtime --------
-    FROM gcr.io/distroless/java17-debian11
+    FROM eclipse-temurin:17-jdk-alpine
     
-    # Copy the built JAR file to the runtime image
-    COPY --from=builder /app/target/*.jar /app.jar
+    WORKDIR /app
     
-    # Run the application
-    ENTRYPOINT ["java", "-jar", "/app.jar"]
+    COPY --from=builder /app/target/*.jar app.jar
+    
+    EXPOSE 8080
+    
+    ENTRYPOINT ["java", "-jar", "app.jar"]
+    
     
