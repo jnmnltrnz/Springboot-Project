@@ -16,16 +16,18 @@
 # ENTRYPOINT ["java", "-jar", "/app.jar"]
 
 
-
 # -------- Stage 1: Build --------
     FROM eclipse-temurin:17-jdk AS builder
 
     WORKDIR /app
     
+    # Copy Maven configuration and source code
     COPY pom.xml .
     COPY src ./src
     
-    RUN apt-get update && apt-get install -y maven && \
+    # Install Maven and build the project
+    RUN apt-get update && \
+        apt-get install -y maven && \
         mvn clean package -DskipTests
     
     # -------- Stage 2: Runtime --------
@@ -33,10 +35,12 @@
     
     WORKDIR /app
     
+    # Copy the built jar from the builder stage
     COPY --from=builder /app/target/*.jar app.jar
     
-    EXPOSE 8080
+    # Set the port to match your Spring Boot configuration
+    EXPOSE 8081
     
+    # Run the application
     ENTRYPOINT ["java", "-jar", "app.jar"]
-    
     
