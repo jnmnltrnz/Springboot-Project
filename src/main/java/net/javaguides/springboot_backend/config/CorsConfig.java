@@ -11,7 +11,7 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    private static final String FRONTEND_URL = "https://vue-project-six-chi.vercel.app";
+    private static final String FRONTEND_URL = "https://workliox.vercel.app";
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
