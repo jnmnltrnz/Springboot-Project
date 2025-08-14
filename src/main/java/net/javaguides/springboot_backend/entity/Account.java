@@ -24,6 +24,8 @@ public class Account {
     @Column(nullable = false)
     private String password;
 
+    private boolean defaultPassword;
+
     private String sessionId;
 
     private LocalDateTime lastLogin;

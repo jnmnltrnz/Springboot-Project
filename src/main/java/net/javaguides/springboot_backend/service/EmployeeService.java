@@ -4,6 +4,8 @@ import net.javaguides.springboot_backend.entity.*;
 import net.javaguides.springboot_backend.exception.ResourceNotFoundException;
 import net.javaguides.springboot_backend.payload.DocumentResponse;
 import net.javaguides.springboot_backend.repositories.*;
+import net.javaguides.springboot_backend.utils.RandomAlpaNumUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,24 +22,27 @@ public class EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
-    
+
     @Autowired
     private DocumentRepository documentRepository;
-    
+
     @Autowired
     private ProfileRepository profileRepository;
-    
+
     @Autowired
     private AuditService auditService;
-    
+
     @Autowired
     private ProjectRepository projectRepository;
-    
+
     @Autowired
     private MeetingRepository meetingRepository;
-    
+
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private RandomAlpaNumUtils rAlpaNumUtils;
 
     public List<Employee> getAllEmployees() {
         return employeeRepository.findByFirstNameNot("admin");
@@ -49,7 +54,7 @@ public class EmployeeService {
             throw new IllegalArgumentException("Employee with email " + employee.getEmail() + " already exists");
         }
 
-        String rawPassword = generateRandomAlphanumeric(10);
+        String rawPassword = rAlpaNumUtils.generateRandomAlphanumeric(10);
 
         // Create account with unique username
         Account account = new Account();
@@ -57,6 +62,7 @@ public class EmployeeService {
         String uniqueUsername = generateUniqueUsername(baseUsername);
         account.setUsername(uniqueUsername);
         account.setPassword(rawPassword);
+        account.setDefaultPassword(true);
         account.setAuthenticated(false);
         employee.setAccount(account);
         employee.setCreatedAt(LocalDateTime.now());
@@ -73,7 +79,9 @@ public class EmployeeService {
         profileRepository.save(profileEmployee);
 
         // Audit trail
-        auditService.createAuditTrail("New employee " + savedEmployee.getFirstName() + " " + savedEmployee.getLastName() + " was added", username);
+        auditService.createAuditTrail(
+                "New employee " + savedEmployee.getFirstName() + " " + savedEmployee.getLastName() + " was added",
+                username);
 
         return savedEmployee;
     }
@@ -81,13 +89,13 @@ public class EmployeeService {
     private String generateUniqueUsername(String baseUsername) {
         String username = baseUsername;
         int counter = 1;
-        
+
         // Check if username exists and generate a unique one
         while (accountRepository.existsByUsername(username)) {
             username = baseUsername + counter;
             counter++;
         }
-        
+
         return username;
     }
 
@@ -99,7 +107,7 @@ public class EmployeeService {
 
             // Fetch all documents associated with the employee
             List<Document> documents = documentRepository.findByEmployeeId(id);
-            
+
             // Delete documents if they exist
             if (!documents.isEmpty()) {
                 documentRepository.deleteAll(documents);
@@ -136,7 +144,7 @@ public class EmployeeService {
 
             // Delete the employee (this will cascade to account due to @OneToOne cascade)
             employeeRepository.deleteById(id);
-            
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to delete employee: " + e.getMessage(), e);
         }
@@ -147,7 +155,8 @@ public class EmployeeService {
         Employee updated = employeeRepository.save(employee);
 
         // Audit trail
-        auditService.createAuditTrail("Updated employee " + updated.getFirstName() + " " + updated.getLastName(), username);
+        auditService.createAuditTrail("Updated employee " + updated.getFirstName() + " " + updated.getLastName(),
+                username);
 
         return updated;
     }
@@ -171,7 +180,9 @@ public class EmployeeService {
         documentRepository.save(document);
 
         // Audit trail
-        auditService.createAuditTrail("Uploaded document for " + employee.getFirstName().toLowerCase() + ": " + file.getOriginalFilename(), username);
+        auditService.createAuditTrail(
+                "Uploaded document for " + employee.getFirstName().toLowerCase() + ": " + file.getOriginalFilename(),
+                username);
 
         return "File uploaded and saved to DB: " + file.getOriginalFilename();
     }
@@ -232,7 +243,7 @@ public class EmployeeService {
         // First check if employee exists
         employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + employeeId));
-        
+
         return profileRepository.findByEmployeeId(employeeId);
     }
 
@@ -248,14 +259,4 @@ public class EmployeeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
     }
 
-    private static final String ALPHANUM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final SecureRandom RANDOM = new SecureRandom();
-
-    public static String generateRandomAlphanumeric(int length) {
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            sb.append(ALPHANUM.charAt(RANDOM.nextInt(ALPHANUM.length())));
-        }
-        return sb.toString();
-    }
-} 
+}

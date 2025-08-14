@@ -11,14 +11,14 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    private static final String FRONTEND_URL = "https://workliox.vercel.app";
+    private static final String FRONTEND_URL = "http://localhost:3000";
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(FRONTEND_URL));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization")); // optional: expose headers like token if needed
         config.setAllowCredentials(true);

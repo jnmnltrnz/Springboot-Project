@@ -29,6 +29,12 @@ public class EmployeeController {
         return ResponseEntity.ok(ApiResponse.success("Employees retrieved successfully", employees));
     }
 
+    @GetMapping("/employee/{id}")
+    public ResponseEntity<ApiResponse<Employee>> getEmployee(@PathVariable Long id ) {
+        Employee employee = employeeService.getEmployeeById(id);
+        return ResponseEntity.ok(ApiResponse.success("User account retrieved successfully", employee));
+    }
+
     @PostMapping("/addEmployee")
     public ResponseEntity<ApiResponse<Employee>> addEmployee(@RequestBody Employee employee, @RequestParam String username) {
         try {

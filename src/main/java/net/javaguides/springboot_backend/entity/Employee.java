@@ -1,6 +1,8 @@
 package net.javaguides.springboot_backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -55,6 +57,11 @@ public class Employee {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
+
+    @JsonProperty("accountId")
+    public Long getAccountId() {
+        return account != null ? account.getId() : null;
+    }
 
     
 }
